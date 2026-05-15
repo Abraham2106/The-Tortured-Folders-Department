@@ -2,21 +2,45 @@
   "name": "archvisita",
   "private": true,
   "version": "1.0.0",
+  "description": "Un archivero inteligente para organizar archivos académicos automáticamente.",
+  "author": "Abraham2106",
   "main": "electron/main.js",
   "type": "module",
   "scripts": {
     "dev": "concurrently \"vite\" \"wait-on tcp:5173 && electron .\"",
     "build": "vite build",
+    "dist": "npm run build && electron-builder",
+    "postinstall": "electron-builder install-app-deps",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
     "audit:fs": "grep -rn 'unlink\\|rmdir\\|\\brm\\b' electron/ && exit 1 || exit 0"
   },
+  "build": {
+    "appId": "com.tortured.folders.department",
+    "productName": "The Tortured Folders Department",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "The Tortured Folders Department"
+    }
+  },
   "dependencies": {
     "better-sqlite3": "11.5.0",
     "chokidar": "^5.0.0",
     "dotenv": "^17.4.2",
-    "electron": "31.7.7",
     "geist": "^1.7.0",
     "lucide-react": "^1.16.0",
     "mammoth": "^1.12.0",
@@ -32,7 +56,8 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
     "concurrently": "^9.2.1",
-    "electron-rebuild": "^3.2.9",
+    "electron": "31.7.7",
+    "electron-builder": "^26.8.1",
     "eslint": "^10.3.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",

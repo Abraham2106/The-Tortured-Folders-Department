@@ -6,7 +6,7 @@ import { getDb } from '../database/connection.js';
 /**
  * Generates a JSON map of a directory structure up to a given depth.
  */
-export const generateStructureMap = async (rootPath, maxDepth = 3) => {
+export const generateStructureMap = async (rootPath, maxDepth = 4) => {
   const scan = async (currentPath, depth) => {
     if (depth > maxDepth) return null;
     

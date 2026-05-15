@@ -29,7 +29,7 @@ export const getPendingQueue = (profileId) => {
   const stmt = db.prepare(`
     SELECT q.* FROM intake_queue q
     JOIN watch_folders w ON q.watch_folder_id = w.id
-    WHERE w.profile_id = ? AND q.status IN ('processing', 'pending', 'queued_offline')
+    WHERE w.profile_id = ? AND q.status IN ('processing', 'pending', 'queued_offline', 'pending_review')
   `);
   return stmt.all(profileId);
 };

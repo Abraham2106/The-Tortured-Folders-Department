@@ -35,7 +35,10 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
         </div>
       </nav>
       <div className={styles.sidebarFooter}>
-        <div className={styles.navItem}>
+        <div 
+          className={`${styles.navItem} ${activeTab === 'settings' ? styles.active : ''}`}
+          onClick={() => setActiveTab('settings')}
+        >
           <Settings size={18} />
           <span>Settings</span>
         </div>

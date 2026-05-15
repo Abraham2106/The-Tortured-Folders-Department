@@ -25,7 +25,7 @@ export const performRollback = async (transactionId) => {
   // We'll skip 'rmdir' for now to keep it conservative.
   const reversibleDiffs = inverseDiffs.filter(d => d.action !== 'rmdir');
 
-  const result = await executeMoves(reversibleDiffs);
+  const result = await executeMoves(original.profile_id, reversibleDiffs);
 
   // Log the rollback as its own transaction
   const rollbackLog = {

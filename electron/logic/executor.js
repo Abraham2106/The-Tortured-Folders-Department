@@ -11,6 +11,11 @@ import crypto from 'crypto';
  * @returns {Promise<Object>} Result summary
  */
 export const executeMoves = async (profileId, diffs) => {
+  if (!diffs || !Array.isArray(diffs)) {
+    console.warn('executeMoves: No diffs to execute');
+    return { status: 'skipped', summary: { total: 0, success: 0, failed: 0, skipped: 0 }, details: [] };
+  }
+
   const results = [];
   let successCount = 0;
   let failCount = 0;
@@ -22,7 +27,7 @@ export const executeMoves = async (profileId, diffs) => {
       if (diff.action === 'move' || diff.action === 'move-dir') {
         try {
           await fs.access(diff.source);
-        } catch (e) {
+        } catch {
           results.push({ ...diff, status: 'failed', error: 'Source not found' });
           failCount++;
           continue;
@@ -30,13 +35,13 @@ export const executeMoves = async (profileId, diffs) => {
       }
 
       // 2. Check if target already exists — skip for mkdir (it's idempotent)
-      if (diff.action !== 'mkdir') {
+      if (diff.action !== 'mkdir' && diff.overwrite !== true) {
         try {
           await fs.access(diff.target);
           results.push({ ...diff, status: 'skipped', error: 'Target already exists' });
           skipCount++;
           continue;
-        } catch (e) {
+        } catch {
           // Target doesn't exist — good
         }
       }
@@ -49,6 +54,9 @@ export const executeMoves = async (profileId, diffs) => {
 
       // 4. Perform action
       if (diff.action === 'move') {
+        if (diff.overwrite === true) {
+          await fs.rm(diff.target, { force: true });
+        }
         await fs.rename(diff.source, diff.target);
       } else if (diff.action === 'move-dir') {
         // For directory moves, ensure parent of target exists, then rename
@@ -57,6 +65,13 @@ export const executeMoves = async (profileId, diffs) => {
         await fs.rename(diff.source, diff.target);
       } else if (diff.action === 'mkdir') {
         await fs.mkdir(diff.target, { recursive: true });
+      } else if (diff.action === 'rmdir') {
+        // SAFETY: Check if directory is empty before deleting
+        const contents = await fs.readdir(diff.source);
+        if (contents.length > 0) {
+          throw new Error('Carpeta no está vacía, abortando borrado por seguridad.');
+        }
+        await fs.rmdir(diff.source);
       }
       
       results.push({ ...diff, status: 'success' });

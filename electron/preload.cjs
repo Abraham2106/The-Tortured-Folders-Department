@@ -10,7 +10,7 @@ contextBridge.exposeInMainWorld('api', {
     delete: (id) => ipcRenderer.invoke('profiles:delete', id)
   },
   chat: {
-    send: (message, history, targetDir) => ipcRenderer.invoke('chat:send', { message, history, targetDir })
+    send: (profileId, message, history, targetDir) => ipcRenderer.invoke('chat:send', { profileId, message, history, targetDir })
   },
   fs: {
     execute: (profileId, diffs) => ipcRenderer.invoke('fs:execute', { profileId, diffs })
@@ -32,6 +32,24 @@ contextBridge.exposeInMainWorld('api', {
       const listener = (_, data) => callback(data);
       ipcRenderer.on('intake:status', listener);
       return () => ipcRenderer.removeListener('intake:status', listener);
+    }
+  },
+  settings: {
+    get: () => ipcRenderer.invoke('settings:get'),
+    update: (key, value) => ipcRenderer.invoke('settings:update', { key, value })
+  },
+  logs: {
+    get: (limit) => ipcRenderer.invoke('logs:get', limit)
+  },
+  hitl: {
+    listPending: (profileId) => ipcRenderer.invoke('hitl:list-pending', profileId),
+    updateProposal: (proposalId, diffs) => ipcRenderer.invoke('hitl:update-proposal', { proposalId, diffs }),
+    approve: (proposalId, diffs) => ipcRenderer.invoke('hitl:approve', { proposalId, diffs }),
+    reject: (proposalId) => ipcRenderer.invoke('hitl:reject', proposalId),
+    onProposal: (callback) => {
+      const listener = (_, data) => callback(data);
+      ipcRenderer.on('hitl:proposal', listener);
+      return () => ipcRenderer.removeListener('hitl:proposal', listener);
     }
   }
 });

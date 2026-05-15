@@ -1,0 +1,94 @@
+.stack {
+  position: absolute;
+  top: 88px;
+  right: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 30;
+  pointer-events: none;
+}
+
+.toast {
+  width: 320px;
+  background: #23262d;
+  color: #eef4ff;
+  border: 1px solid rgba(214, 225, 255, 0.18);
+  box-shadow: 0 14px 28px rgba(12, 17, 28, 0.24);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #b9d7ff;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.risk {
+  color: #d7deea;
+  font-size: 11px;
+  font-family: var(--font-body);
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: 19px;
+  color: #ffffff;
+}
+
+.summary {
+  color: #e3eaf6;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.secondaryBtn,
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border: 1px solid transparent;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.secondaryBtn {
+  color: #dce5f4;
+  border-color: rgba(220, 229, 244, 0.18);
+}
+
+.secondaryBtn:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.primaryBtn {
+  color: #1f2430;
+  background: #c6defd;
+}
+
+.primaryBtn:hover {
+  background: #d6e6ff;
+}

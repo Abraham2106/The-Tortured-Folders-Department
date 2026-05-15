@@ -3,65 +3,77 @@ import path from 'path';
 import { minimatch } from 'minimatch';
 
 /**
+ * Recursively gets all files in a directory.
+ */
+const getAllFiles = async (dirPath, baseDir) => {
+  const entries = await fs.readdir(dirPath, { withFileTypes: true });
+  let files = [];
+  
+  for (const entry of entries) {
+    const fullPath = path.join(dirPath, entry.name);
+    if (entry.isDirectory()) {
+      if (entry.name.startsWith('.')) continue;
+      files = [...files, ...(await getAllFiles(fullPath, baseDir))];
+    } else {
+      // Return relative path from baseDir to make matching easier
+      files.push(path.relative(baseDir, fullPath));
+    }
+  }
+  return files;
+};
+
+/**
  * Calculates a list of proposed file movements based on a set of operations.
- * 
- * @param {string} targetDir - The base directory to scan.
- * @param {Array} operations - Array of objects like { type: 'move', pattern: '*.pdf', destination: 'Docs/' }
- * @returns {Promise<Array>} Array of diff objects { sourcePath, targetPath, action, id }
  */
 export const calculateDiff = async (targetDir, operations) => {
   const diffs = [];
   
   try {
-    // Read all files in the target directory (shallow for now to be safe)
-    const files = await fs.readdir(targetDir, { withFileTypes: true });
-    
-    // We only process files, not directories, for moving
-    const fileNames = files.filter(f => f.isFile()).map(f => f.name);
+    // 1. Get ALL files recursively
+    const relativeFilePaths = await getAllFiles(targetDir, targetDir);
 
-    for (const file of fileNames) {
-      // Find the first operation that matches this file
+    for (const relPath of relativeFilePaths) {
+      const fileName = path.basename(relPath);
+      
       for (const op of operations) {
-        if (op.type === 'move' && minimatch(file, op.pattern, { matchBase: true, nocase: true })) {
-          const sourcePath = path.join(targetDir, file);
-          const targetPath = path.join(targetDir, op.destination, file);
+        // matchBase: true allows matching just the filename if pattern is e.g. "*.pdf"
+        if (op.type === 'move' && minimatch(relPath, op.pattern, { matchBase: true, nocase: true })) {
+          const sourcePath = path.join(targetDir, relPath);
+          const targetPath = path.join(targetDir, op.destination, fileName);
           
-          // Generate a unique id for this operation
+          // Skip if file is already in the destination
+          if (path.normalize(sourcePath) === path.normalize(targetPath)) continue;
+
           const id = Math.random().toString(36).substring(2, 9);
-          
           diffs.push({
             id,
             action: 'move',
             source: sourcePath,
             target: targetPath,
-            fileName: file,
+            fileName: fileName,
             targetDir: op.destination
           });
-          
-          // Once matched, don't apply subsequent operations to the same file
           break;
         }
       }
     }
     
-    // 2. Handle move-dir operations (moving entire directories)
+    // 2. Handle move-dir operations (directories at root level for now)
     for (const op of operations) {
       if (op.type === 'move-dir' && op.source && op.destination) {
         const id = Math.random().toString(36).substring(2, 9);
-        const sourcePath = path.join(targetDir, op.source);
-        const destPath = path.join(targetDir, op.destination);
         diffs.push({
           id,
           action: 'move-dir',
-          source: sourcePath,
-          target: destPath,
+          source: path.join(targetDir, op.source),
+          target: path.join(targetDir, op.destination),
           fileName: op.source,
           targetDir: op.destination
         });
       }
     }
 
-    // 3. Handle mkdir operations (creating empty folders)
+    // 3. Handle mkdir operations
     for (const op of operations) {
       if (op.type === 'mkdir') {
         const id = Math.random().toString(36).substring(2, 9);
@@ -72,6 +84,21 @@ export const calculateDiff = async (targetDir, operations) => {
           target: path.join(targetDir, op.destination),
           fileName: op.destination,
           targetDir: op.destination
+        });
+      }
+    }
+
+    // 4. Handle rmdir operations (deleting empty folders)
+    for (const op of operations) {
+      if (op.type === 'rmdir' && op.source) {
+        const id = Math.random().toString(36).substring(2, 9);
+        diffs.push({
+          id,
+          action: 'rmdir',
+          source: path.join(targetDir, op.source),
+          target: null,
+          fileName: op.source,
+          targetDir: 'DELETE (If Empty)'
         });
       }
     }

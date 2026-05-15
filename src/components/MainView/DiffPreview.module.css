@@ -2,9 +2,10 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 32px;
+  padding: 28px;
   background-color: var(--bg);
   position: relative;
+  gap: 18px;
 }
 
 .title {
@@ -12,9 +13,8 @@
   font-size: 24px;
   font-style: italic;
   color: var(--text-primary);
-  margin-bottom: 32px;
   border-bottom: 2px solid var(--text-primary);
-  padding-bottom: 16px;
+  padding-bottom: 14px;
   text-transform: lowercase;
 }
 
@@ -34,12 +34,190 @@
   margin-top: 8px;
 }
 
+.pendingTray {
+  border: 1px solid var(--border);
+  background: #fbfaf7;
+  box-shadow: 2px 2px 0 var(--border);
+}
+
+.pendingHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+
+.pendingList {
+  display: flex;
+  flex-direction: column;
+}
+
+.pendingItem {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-top: 1px solid rgba(209, 205, 194, 0.45);
+}
+
+.pendingItemActive {
+  background: #f3eee1;
+}
+
+.pendingTitle {
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pendingMeta {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.pendingEmpty {
+  padding: 14px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.detailPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  flex: 1;
+}
+
+.headerBlock {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.proposalTitle {
+  font-family: var(--font-heading);
+  font-size: 26px;
+  color: var(--text-primary);
+}
+
+.summary {
+  margin-top: 8px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.statusColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.statusBadge {
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.awaiting_approval {
+  background: #f3eee1;
+}
+
+.modified {
+  background: #ece6dc;
+}
+
+.approved {
+  background: #e4ece2;
+}
+
+.rejected {
+  background: #f1e0e0;
+}
+
+.confidence {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.collisionBox {
+  background: #fff5ef;
+  border: 1px solid #d9b8a4;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.collisionHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #8f4f2a;
+  font-weight: 600;
+}
+
+.collisionItem {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  border-top: 1px dashed rgba(143, 79, 42, 0.28);
+  padding-top: 12px;
+}
+
+.collisionText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.collisionHint {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.collisionActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.summaryBox {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: var(--font-body);
+}
+
 .diffList {
   flex: 1;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   font-family: var(--font-mono);
   font-size: 13px;
 }
@@ -47,10 +225,9 @@
 .diffItem {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 10px 12px;
+  gap: 8px;
+  padding: 12px 14px;
   background-color: var(--bg-secondary);
-  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
 }
 
@@ -60,102 +237,112 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   padding: 2px 6px;
-  border-radius: 3px;
   align-self: flex-start;
 }
 
 .actionMove {
   background-color: rgba(99, 102, 241, 0.12);
-  color: #818cf8;
+  color: #5757b8;
 }
 
 .actionMoveDir {
   background-color: rgba(245, 158, 11, 0.12);
-  color: #f59e0b;
+  color: #9a6500;
 }
 
 .actionMkdir {
   background-color: rgba(16, 185, 129, 0.12);
-  color: #34d399;
+  color: #2f7c55;
+}
+
+.actionRmdir {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #9d4a4a;
 }
 
 .fileName {
-  flex: 1;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.pathBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pathLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.pathValue {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.pathInput {
+  border: 1px solid var(--border);
+  background: #ffffff;
+  padding: 8px 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
   color: var(--text-primary);
 }
 
-.action {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.moveArrow {
-  color: var(--accent);
-  font-weight: bold;
-}
-
-.targetDir {
-  color: var(--success);
+.overwriteNote {
+  color: var(--warning);
+  font-size: 11px;
 }
 
 .actions {
-  margin-top: 24px;
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  padding-top: 16px;
+  gap: 10px;
+  padding-top: 12px;
   border-top: 1px solid var(--border);
+  flex-wrap: wrap;
 }
 
-.btnSecondary {
-  padding: 10px 20px;
-  color: var(--text-secondary);
+.btnSecondary,
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 14px;
 }
 
 .btnSecondary:hover {
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
+  background: var(--bg-secondary);
 }
 
 .btnPrimary {
   background-color: var(--accent);
   color: var(--bg);
-  padding: 10px 24px;
-  border-radius: var(--radius-md);
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 14px;
 }
 
 .btnPrimary:hover {
   background-color: var(--accent-hover);
 }
 
-.summaryBox {
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 20px;
-  margin-bottom: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-family: var(--font-body);
+.resolutionNote {
+  color: var(--text-secondary);
+  font-size: 13px;
 }
 
 .successText {
-  color: #16a34a; /* success green */
+  color: #16a34a;
   font-weight: 600;
 }
 
 .failedText {
-  color: #dc2626; /* error red */
+  color: #dc2626;
   font-weight: 600;
 }
 

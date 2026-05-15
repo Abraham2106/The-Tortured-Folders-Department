@@ -66,6 +66,111 @@
   max-width: 90%;
 }
 
+.proposalBubble {
+  max-width: 92%;
+  padding: 16px 18px;
+  background: #f6f0df;
+  border: 1px solid #d8cab0;
+  box-shadow: 2px 2px 0 var(--border);
+  font-family: var(--font-mono);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.proposalHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.proposalTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.proposalInspectBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  font-size: 11px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.proposalInspectBtn:hover {
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.proposalTitle {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-style: italic;
+  color: var(--text-primary);
+}
+
+.proposalText {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.proposalMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.selectedNote {
+  font-size: 12px;
+  color: var(--success);
+}
+
+.proposalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.proposalPrimary,
+.proposalSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  font-family: var(--font-body);
+  font-size: 12px;
+}
+
+.proposalPrimary {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.proposalPrimary:hover {
+  background: var(--accent-hover);
+}
+
+.proposalSecondary:hover {
+  background: rgba(30, 26, 23, 0.06);
+}
+
+.proposalResolved {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
 .inputArea {
   padding: 16px;
   background-color: var(--bg);

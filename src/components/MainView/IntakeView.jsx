@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import styles from './Intake.module.css';
 import { Mailbox, Archive, Plus, Trash2, RefreshCw, Folder } from 'lucide-react';
 import { useProfileStore } from '../../store/useProfileStore';
@@ -10,7 +10,7 @@ export const IntakeView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [processingLog, setProcessingLog] = useState([]);
 
-  const loadIntakeData = async () => {
+  const loadIntakeData = useCallback(async () => {
     if (!activeProfile) return;
     try {
       const folders = await window.api.intake.listWatchFolders(activeProfile.id);
@@ -23,10 +23,12 @@ export const IntakeView = () => {
     } catch (error) {
       console.error('Failed to load intake data:', error);
     }
-  };
+  }, [activeProfile]);
 
   useEffect(() => {
-    loadIntakeData();
+    void (async () => {
+      await loadIntakeData();
+    })();
 
     // Listen for real-time status updates
     const removeListener = window.api.intake.onStatus((data) => {
@@ -40,15 +42,16 @@ export const IntakeView = () => {
     return () => {
       if (typeof removeListener === 'function') removeListener();
     };
-  }, [activeProfile]);
+  }, [loadIntakeData]);
 
   const handleAddWatchFolder = async () => {
     const path = await window.api.dialog.openFolder();
     if (path) {
       try {
         await window.api.intake.addWatchFolder(activeProfile.id, path);
-        loadIntakeData();
+        await loadIntakeData();
       } catch (error) {
+        console.error('Error adding watch folder:', error);
         alert('Error adding watch folder');
       }
     }
@@ -59,9 +62,10 @@ export const IntakeView = () => {
     if (path) {
       setIsLoading(true);
       try {
-        const map = await window.api.intake.setTruthSource(activeProfile.id, path);
-        loadIntakeData();
+        await window.api.intake.setTruthSource(activeProfile.id, path);
+        await loadIntakeData();
       } catch (error) {
+        console.error('Error setting truth source:', error);
         alert('Error setting truth source');
       } finally {
         setIsLoading(false);
@@ -72,7 +76,7 @@ export const IntakeView = () => {
   return (
     <div className={styles.container}>
       <h2 className={styles.mainTitle}>The Intake Desk</h2>
-      <p className={styles.subtitle}>Designate your reception boxes and establish the structural source of truth.</p>
+      <p className={styles.subtitle}>Designate your reception boxes and let Intake archive incoming files automatically using your folder structure as source of truth.</p>
 
       <div className={styles.grid}>
         {/* Section: Buzones */}
@@ -156,18 +160,35 @@ export const IntakeView = () => {
           {processingLog.length === 0 ? (
             <div className={styles.empty}>Standing by... Drop a file into a watch folder to begin.</div>
           ) : (
-            processingLog.map(log => (
-              <div key={log.id} className={styles.activityItem}>
-                <span className={styles.logTime}>[{log.timestamp}]</span>
-                <span className={styles.logPath}>{log.filePath.split(/[\\/]/).pop()}</span>
-                <span className={`${styles.logStatus} ${styles[log.event]}`}>
-                  {log.event === 'processing' ? 'Detecting...' : 
-                   log.event === 'classifying' ? 'Classifying...' : 
-                   log.event === 'classified' ? 'Archived' :
-                   log.event === 'extracted' ? 'Ready' : 'Error'}
-                </span>
-              </div>
-            ))
+            processingLog.map(log => {
+              const detailMessage = log.message || log.reason || '';
+
+              return (
+                <div key={log.id} className={styles.activityItem}>
+                  <div className={styles.activityHeader}>
+                    <span className={styles.logTime}>[{log.timestamp}]</span>
+                    <span className={styles.logPath}>{log.filePath.split(/[\\/]/).pop()}</span>
+                    <span className={`${styles.logStatus} ${styles[log.event]}`}>
+                      {log.event === 'processing' ? 'Detecting...' : 
+                       log.event === 'classifying' ? 'Classifying...' : 
+                       log.event === 'classified' ? 'Archived automatically' :
+                       log.event === 'review_required' ? 'Review required' :
+                       log.event === 'rejected' ? 'Rejected' :
+                       log.event === 'extracted' ? 'Ready' : 
+                       (log.event === 'error' ? 'Attention needed' : 'Error')}
+                    </span>
+                  </div>
+                  {detailMessage ? (
+                    <div className={styles.logMessage}>{detailMessage}</div>
+                  ) : null}
+                  {Array.isArray(log.alternatives) && log.alternatives.length > 0 ? (
+                    <div className={styles.logAlternatives}>
+                      Alternatives: {log.alternatives.join(' | ')}
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })
           )}
         </div>
       </section>

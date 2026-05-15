@@ -68,7 +68,38 @@ export const setupDatabase = () => {
       error TEXT,
       FOREIGN KEY (watch_folder_id) REFERENCES watch_folders(id) ON DELETE SET NULL
     );
+
+    CREATE TABLE IF NOT EXISTS app_settings (
+      key TEXT PRIMARY KEY,
+      value TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS error_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      timestamp INTEGER NOT NULL,
+      level TEXT,
+      message TEXT,
+      stack TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS hitl_logs (
+      id TEXT PRIMARY KEY,
+      profile_id TEXT NOT NULL,
+      proposal_id TEXT,
+      timestamp INTEGER NOT NULL,
+      action_type TEXT,
+      source_path TEXT,
+      target_path TEXT,
+      user_decision TEXT,
+      ai_confidence REAL,
+      metadata TEXT,
+      FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE
+    );
   `);
+
+  // Configuración inicial por defecto
+  db.prepare('INSERT OR IGNORE INTO app_settings (key, value) VALUES (?, ?)').run('proxy_url', '');
+  db.prepare('INSERT OR IGNORE INTO app_settings (key, value) VALUES (?, ?)').run('ai_model', 'gemini-2.0-flash');
 
   return db;
 };
