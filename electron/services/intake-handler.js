@@ -21,6 +21,16 @@ import { broadcastToAllWindows, getMainWindow } from '../window/window-manager.j
 const activeWorkers = new Map();
 const workerPath = new URL('../workers/intake-worker.js', import.meta.url);
 
+export const stopIntakeWorker = (profileId) => {
+  const currentWorker = activeWorkers.get(profileId);
+  if (!currentWorker) return;
+
+  activeWorkers.delete(profileId);
+  void currentWorker.terminate().catch((error) => {
+    console.error(`Failed to terminate intake worker for profile ${profileId}:`, error);
+  });
+};
+
 const emitIntakeStatus = (mainWindow, payload) => {
   if (mainWindow && !mainWindow.isDestroyed()) {
     mainWindow.webContents.send('intake:status', payload);
@@ -156,10 +166,7 @@ export const autoExecuteIntakeClassification = async ({
 };
 
 export const startIntakeWorker = (profileId, watchFolders, mainWindow = null) => {
-  const currentWorker = activeWorkers.get(profileId);
-  if (currentWorker) {
-    currentWorker.terminate();
-  }
+  stopIntakeWorker(profileId);
 
   if (!watchFolders || watchFolders.length === 0) return;
 

@@ -31,7 +31,7 @@ export const SettingsView = () => {
   };
 
   const handleUpdate = async (key, value) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
+    setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
   const saveSettings = async () => {
@@ -41,7 +41,7 @@ export const SettingsView = () => {
       alert('Configuración guardada con éxito.');
     } catch (err) {
       console.error('Error saving settings:', err);
-      alert('Error al guardar: ' + err.message);
+      alert(`Error al guardar: ${err.message}`);
     } finally {
       setSaving(false);
     }
@@ -52,30 +52,29 @@ export const SettingsView = () => {
       <header className={styles.header}>
         <div className={styles.titleGroup}>
           <Shield size={24} className={styles.icon} />
-          <h1>Department Privacy & Config</h1>
+          <h1>Privacidad y configuración</h1>
         </div>
         <button className={styles.saveButton} onClick={saveSettings} disabled={saving}>
           <Save size={16} />
-          {saving ? 'Guardando...' : 'Guardar Cambios'}
+          {saving ? 'Guardando...' : 'Guardar cambios'}
         </button>
       </header>
 
       <div className={styles.grid}>
-        {/* Settings Panel */}
         <section className={styles.panel}>
           <div className={styles.panelHeader}>
             <AlertCircle size={18} />
-            <h2>IA Configuration</h2>
+            <h2>Configuración de IA</h2>
           </div>
           <p className={styles.description}>
             Configura tu conexión con el Departamento. Tus datos y claves se guardan localmente.
           </p>
-          
+
           <div className={styles.field}>
-            <label>Gemini Proxy URL</label>
-            <input 
-              type="text" 
-              value={settings.proxy_url || ''} 
+            <label>URL del proxy de Gemini</label>
+            <input
+              type="text"
+              value={settings.proxy_url || ''}
               onChange={(e) => handleUpdate('proxy_url', e.target.value)}
               placeholder="https://tu-proxy.railway.app/v1/chat/completions"
             />
@@ -83,17 +82,16 @@ export const SettingsView = () => {
           </div>
         </section>
 
-        {/* Logs Panel */}
         <section className={styles.panel}>
           <div className={styles.panelHeader}>
             <Terminal size={18} />
-            <h2>System Activity Logs</h2>
+            <h2>Registros de actividad</h2>
           </div>
           <div className={styles.logContainer}>
             {logs.length === 0 ? (
               <div className={styles.emptyLogs}>No hay registros recientes.</div>
             ) : (
-              logs.map(log => (
+              logs.map((log) => (
                 <div key={log.id} className={styles.logEntry}>
                   <span className={styles.logTime}>
                     {new Date(log.timestamp).toLocaleTimeString()}

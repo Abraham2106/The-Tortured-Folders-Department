@@ -35,9 +35,9 @@ export const HitlToastStack = ({
           <div className={styles.header}>
             <div className={styles.label}>
               <Sparkles size={14} />
-              <span>Sugerencia rapida</span>
+              <span>Sugerencia rápida</span>
             </div>
-            <span className={styles.risk}>Auto-dismiss 10s</span>
+            <span className={styles.risk}>Cierre automático en 10 s</span>
           </div>
 
           <div className={styles.title}>{proposal.title}</div>

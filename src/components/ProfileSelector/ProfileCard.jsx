@@ -9,7 +9,7 @@ export const ProfileCard = ({ profile, onClick, isNew }) => {
         <div className={styles.avatar}>
           <Plus size={24} />
         </div>
-        <span className={styles.cardName}>Nuevo Perfil</span>
+        <span className={styles.cardName}>Nuevo perfil</span>
       </div>
     );
   }

@@ -15,8 +15,8 @@ export const ProfileSelector = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>The Tortured Folders Department</h1>
-        <p className={styles.subtitle}>Selecciona un archivo para comenzar la sesión.</p>
+        <h1 className={styles.title}>El Departamento de las Carpetas Torturadas</h1>
+        <p className={styles.subtitle}>Selecciona un perfil para comenzar la sesión.</p>
       </div>
 
       <div className={styles.grid}>

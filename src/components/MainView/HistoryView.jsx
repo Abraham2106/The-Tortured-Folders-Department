@@ -6,7 +6,7 @@ import { useProfileStore } from '../../store/useProfileStore';
 export const HistoryView = () => {
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isRollingBack, setIsRollingBack] = useState(null); // id of tx being rolled back
+  const [isRollingBack, setIsRollingBack] = useState(null);
   const { activeProfile } = useProfileStore();
 
   const fetchHistory = async () => {
@@ -30,40 +30,40 @@ export const HistoryView = () => {
   }, [activeProfile]);
 
   const handleRollback = async (id) => {
-    if (!window.confirm('Are you sure you want to revert this organization? This will move files back to their original locations.')) {
+    if (!window.confirm('¿Seguro que quieres revertir esta organización? Esto moverá los archivos de vuelta a sus ubicaciones originales.')) {
       return;
     }
 
     setIsRollingBack(id);
     try {
       const result = await window.api.transactions.rollback(id);
-      alert(`Rollback completed: ${result.successCount} moved back, ${result.failCount} failed.`);
-      fetchHistory(); // Refresh list
+      alert(`Reversión completada: ${result.successCount} movidos de vuelta, ${result.failCount} fallidos.`);
+      fetchHistory();
     } catch (error) {
       console.error('Rollback failed:', error);
-      alert('Rollback failed. See console for details.');
+      alert('La reversión falló. Revisa la consola para más detalles.');
     } finally {
       setIsRollingBack(null);
     }
   };
 
   if (isLoading) {
-    return <div className={styles.loading}>Loading archival records...</div>;
+    return <div className={styles.loading}>Cargando registros de archivado...</div>;
   }
 
   if (transactions.length === 0) {
     return (
       <div className={styles.emptyState}>
         <Calendar size={48} className={styles.emptyIcon} />
-        <h3>No records found</h3>
-        <p>Your archival history is currently empty.</p>
+        <h3>No se encontraron registros</h3>
+        <p>Tu historial de archivado está vacío por ahora.</p>
       </div>
     );
   }
 
   return (
     <div className={styles.historyContainer}>
-      <h2 className={styles.title}>Archival History</h2>
+      <h2 className={styles.title}>Historial de archivado</h2>
       <div className={styles.list}>
         {transactions.map((tx) => (
           <div key={tx.id} className={styles.txItem}>
@@ -79,22 +79,22 @@ export const HistoryView = () => {
               </div>
               <div className={styles.txDetails}>
                 <FileText size={14} />
-                <span>{tx.operations.length} operations processed</span>
+                <span>{tx.operations.length} operaciones procesadas</span>
               </div>
             </div>
-            
-            <button 
+
+            <button
               className={styles.rollbackBtn}
               onClick={() => handleRollback(tx.id)}
               disabled={isRollingBack !== null}
-              title="Undo this organization"
+              title="Deshacer esta organización"
             >
               {isRollingBack === tx.id ? (
                 <div className={styles.spinner} />
               ) : (
                 <>
                   <RotateCcw size={16} />
-                  <span>Revert</span>
+                  <span>Revertir</span>
                 </>
               )}
             </button>

@@ -25,6 +25,7 @@ contextBridge.exposeInMainWorld('api', {
   intake: {
     addWatchFolder: (profileId, path, label) => ipcRenderer.invoke('intake:add-watch-folder', { profileId, path, label }),
     listWatchFolders: (profileId) => ipcRenderer.invoke('intake:list-watch-folders', profileId),
+    deleteWatchFolder: (profileId, watchFolderId) => ipcRenderer.invoke('intake:delete-watch-folder', { profileId, watchFolderId }),
     setTruthSource: (profileId, path) => ipcRenderer.invoke('intake:set-truth-source', { profileId, path }),
     getTruthSource: (profileId) => ipcRenderer.invoke('intake:get-truth-source', profileId),
     startWatcher: (profileId) => ipcRenderer.invoke('intake:start-watcher', profileId),

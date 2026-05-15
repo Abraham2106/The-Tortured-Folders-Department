@@ -55,6 +55,13 @@ export const listWatchFolders = (profileId) => {
   return db.prepare('SELECT * FROM watch_folders WHERE profile_id = ?').all(profileId);
 };
 
+export const deleteWatchFolder = (profileId, watchFolderId) => {
+  const db = getDb();
+  const stmt = db.prepare('DELETE FROM watch_folders WHERE id = ? AND profile_id = ?');
+  stmt.run(watchFolderId, profileId);
+  return { success: true };
+};
+
 export const setTruthSource = async (profileId, rootPath) => {
   const db = getDb();
   const structureMap = await generateStructureMap(rootPath);

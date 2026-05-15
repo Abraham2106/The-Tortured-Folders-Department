@@ -1,12 +1,22 @@
 import * as intakeService from '../logic/intake-service.js';
 import { getMainWindow } from '../window/window-manager.js';
-import { startConfiguredIntakeWorkers, startIntakeWorker } from '../services/intake-handler.js';
+import { startConfiguredIntakeWorkers, startIntakeWorker, stopIntakeWorker } from '../services/intake-handler.js';
+
+const syncProfileIntakeWorker = (profileId) => {
+  const watchFolders = intakeService.listWatchFolders(profileId);
+  if (!Array.isArray(watchFolders) || watchFolders.length === 0) {
+    stopIntakeWorker(profileId);
+    return watchFolders;
+  }
+
+  startIntakeWorker(profileId, watchFolders, getMainWindow());
+  return watchFolders;
+};
 
 export const register = (ipcMain) => {
   ipcMain.handle('intake:add-watch-folder', async (_, { profileId, path, label }) => {
     const result = intakeService.addWatchFolder(profileId, path, label);
-    const watchFolders = intakeService.listWatchFolders(profileId);
-    startIntakeWorker(profileId, watchFolders, getMainWindow());
+    syncProfileIntakeWorker(profileId);
     return result;
   });
 
@@ -14,10 +24,15 @@ export const register = (ipcMain) => {
     return intakeService.listWatchFolders(profileId);
   });
 
+  ipcMain.handle('intake:delete-watch-folder', async (_, { profileId, watchFolderId }) => {
+    const result = intakeService.deleteWatchFolder(profileId, watchFolderId);
+    syncProfileIntakeWorker(profileId);
+    return result;
+  });
+
   ipcMain.handle('intake:set-truth-source', async (_, { profileId, path }) => {
     const result = await intakeService.setTruthSource(profileId, path);
-    const watchFolders = intakeService.listWatchFolders(profileId);
-    startIntakeWorker(profileId, watchFolders, getMainWindow());
+    syncProfileIntakeWorker(profileId);
     return result;
   });
 
@@ -26,8 +41,7 @@ export const register = (ipcMain) => {
   });
 
   ipcMain.handle('intake:start-watcher', async (_, profileId) => {
-    const watchFolders = intakeService.listWatchFolders(profileId);
-    startIntakeWorker(profileId, watchFolders, getMainWindow());
+    syncProfileIntakeWorker(profileId);
     return { success: true };
   });
 };

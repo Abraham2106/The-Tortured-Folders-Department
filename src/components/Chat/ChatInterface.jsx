@@ -231,7 +231,7 @@ export const ChatInterface = ({
             type="button"
             className={styles.folderButton}
             onClick={handleSelectFolder}
-            title="Select target folder"
+            title="Seleccionar carpeta destino"
           >
             <FolderOpen size={18} />
           </button>

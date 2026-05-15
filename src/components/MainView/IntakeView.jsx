@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import styles from './Intake.module.css';
-import { Mailbox, Archive, Plus, Trash2, RefreshCw, Folder } from 'lucide-react';
+import { Mailbox, Archive, Plus, Trash2, RefreshCw, Folder, FolderOpen } from 'lucide-react';
 import { useProfileStore } from '../../store/useProfileStore';
 
 export const IntakeView = () => {
@@ -17,8 +17,6 @@ export const IntakeView = () => {
       const source = await window.api.intake.getTruthSource(activeProfile.id);
       setWatchFolders(folders);
       setTruthSource(source);
-      
-      // Start the watcher
       await window.api.intake.startWatcher(activeProfile.id);
     } catch (error) {
       console.error('Failed to load intake data:', error);
@@ -30,13 +28,12 @@ export const IntakeView = () => {
       await loadIntakeData();
     })();
 
-    // Listen for real-time status updates
     const removeListener = window.api.intake.onStatus((data) => {
-      setProcessingLog(prev => [{
+      setProcessingLog((prev) => [{
         id: Date.now(),
         ...data,
         timestamp: new Date().toLocaleTimeString()
-      }, ...prev].slice(0, 10)); // Keep last 10
+      }, ...prev].slice(0, 10));
     });
 
     return () => {
@@ -52,8 +49,21 @@ export const IntakeView = () => {
         await loadIntakeData();
       } catch (error) {
         console.error('Error adding watch folder:', error);
-        alert('Error adding watch folder');
+        alert('Error al agregar el buzón');
       }
+    }
+  };
+
+  const handleDeleteWatchFolder = async (watchFolderId) => {
+    if (!activeProfile?.id) return;
+    if (!window.confirm('¿Seguro que quieres eliminar este buzón?')) return;
+
+    try {
+      await window.api.intake.deleteWatchFolder(activeProfile.id, watchFolderId);
+      await loadIntakeData();
+    } catch (error) {
+      console.error('Error deleting watch folder:', error);
+      alert(`Error al eliminar el buzón: ${error?.message || 'error desconocido'}`);
     }
   };
 
@@ -66,7 +76,7 @@ export const IntakeView = () => {
         await loadIntakeData();
       } catch (error) {
         console.error('Error setting truth source:', error);
-        alert('Error setting truth source');
+        alert('Error al configurar la fuente de verdad');
       } finally {
         setIsLoading(false);
       }
@@ -75,33 +85,37 @@ export const IntakeView = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.mainTitle}>The Intake Desk</h2>
-      <p className={styles.subtitle}>Designate your reception boxes and let Intake archive incoming files automatically using your folder structure as source of truth.</p>
+      <h2 className={styles.mainTitle}>Mesa de ingreso</h2>
+      <p className={styles.subtitle}>Define tus buzones de recepción y deja que Intake archive archivos automáticamente usando tu estructura de carpetas como fuente de verdad.</p>
 
       <div className={styles.grid}>
-        {/* Section: Buzones */}
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <div className={styles.titleGroup}>
               <Mailbox size={20} />
-              <h3>Buzones (Reception)</h3>
+              <h3>Buzones de recepción</h3>
             </div>
             <button className={styles.addBtn} onClick={handleAddWatchFolder}>
               <Plus size={16} />
-              <span>Add Box</span>
+              <span>Agregar buzón</span>
             </button>
           </div>
           <div className={styles.folderList}>
             {watchFolders.length === 0 ? (
-              <div className={styles.empty}>No watch folders configured.</div>
+              <div className={styles.empty}>No hay buzones configurados.</div>
             ) : (
-              watchFolders.map(folder => (
+              watchFolders.map((folder) => (
                 <div key={folder.id} className={styles.folderItem}>
                   <div className={styles.folderInfo}>
                     <span className={styles.folderLabel}>{folder.label}</span>
                     <span className={styles.folderPath}>{folder.path}</span>
                   </div>
-                  <button className={styles.deleteBtn}>
+                  <button
+                    className={styles.deleteBtn}
+                    onClick={() => handleDeleteWatchFolder(folder.id)}
+                    title="Eliminar buzón"
+                    aria-label={`Eliminar buzón ${folder.label}`}
+                  >
                     <Trash2 size={14} />
                   </button>
                 </div>
@@ -110,19 +124,18 @@ export const IntakeView = () => {
           </div>
         </section>
 
-        {/* Section: Fuente de Verdad */}
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <div className={styles.titleGroup}>
               <Archive size={20} />
-              <h3>Fuente de Verdad (Hierarchy)</h3>
+              <h3>Fuente de verdad</h3>
             </div>
             <button className={styles.actionBtn} onClick={handleSetTruthSource} disabled={isLoading}>
               {isLoading ? <RefreshCw size={16} className={styles.spinner} /> : <Plus size={16} />}
-              <span>{truthSource ? 'Update Root' : 'Set Root'}</span>
+              <span>{truthSource ? 'Actualizar raíz' : 'Definir raíz'}</span>
             </button>
           </div>
-          
+
           {truthSource ? (
             <div className={styles.truthSourceContent}>
               <div className={styles.rootInfo}>
@@ -130,11 +143,17 @@ export const IntakeView = () => {
                 <span>{truthSource.root_path}</span>
               </div>
               <div className={styles.treeMap}>
-                {truthSource.structure_map.destinations.map(dest => (
+                {truthSource.structure_map.destinations.map((dest) => (
                   <div key={dest.path} className={styles.treeItem}>
-                    <div className={styles.destName}>├── 📁 {dest.name}</div>
-                    {dest.subcategories.map(sub => (
-                      <div key={sub} className={styles.subItem}>│   └── 📄 {sub}</div>
+                    <div className={styles.destName}>
+                      <FolderOpen size={14} />
+                      <span>{dest.name}</span>
+                    </div>
+                    {dest.subcategories.map((sub) => (
+                      <div key={sub} className={styles.subItem}>
+                        <span className={styles.subBullet} />
+                        <span>{sub}</span>
+                      </div>
                     ))}
                   </div>
                 ))}
@@ -142,25 +161,24 @@ export const IntakeView = () => {
             </div>
           ) : (
             <div className={styles.empty}>
-              Establish a root directory to generate your structural map.
+              Define un directorio raíz para generar tu mapa estructural.
             </div>
           )}
         </section>
       </div>
 
-      {/* Live Activity Section */}
       <section className={`${styles.section} ${styles.activitySection}`}>
         <div className={styles.sectionHeader}>
           <div className={styles.titleGroup}>
             <RefreshCw size={18} className={processingLog.length > 0 ? styles.spinner : ''} />
-            <h3>Live Activity</h3>
+            <h3>Actividad en vivo</h3>
           </div>
         </div>
         <div className={styles.activityList}>
           {processingLog.length === 0 ? (
-            <div className={styles.empty}>Standing by... Drop a file into a watch folder to begin.</div>
+            <div className={styles.empty}>En espera... Suelta un archivo en un buzón para comenzar.</div>
           ) : (
-            processingLog.map(log => {
+            processingLog.map((log) => {
               const detailMessage = log.message || log.reason || '';
 
               return (
@@ -169,13 +187,13 @@ export const IntakeView = () => {
                     <span className={styles.logTime}>[{log.timestamp}]</span>
                     <span className={styles.logPath}>{log.filePath.split(/[\\/]/).pop()}</span>
                     <span className={`${styles.logStatus} ${styles[log.event]}`}>
-                      {log.event === 'processing' ? 'Detecting...' : 
-                       log.event === 'classifying' ? 'Classifying...' : 
-                       log.event === 'classified' ? 'Archived automatically' :
-                       log.event === 'review_required' ? 'Review required' :
-                       log.event === 'rejected' ? 'Rejected' :
-                       log.event === 'extracted' ? 'Ready' : 
-                       (log.event === 'error' ? 'Attention needed' : 'Error')}
+                      {log.event === 'processing' ? 'Detectando...'
+                        : log.event === 'classifying' ? 'Clasificando...'
+                        : log.event === 'classified' ? 'Archivado automáticamente'
+                        : log.event === 'review_required' ? 'Revisión requerida'
+                        : log.event === 'rejected' ? 'Rechazado'
+                        : log.event === 'extracted' ? 'Listo'
+                        : (log.event === 'error' ? 'Atención requerida' : 'Error')}
                     </span>
                   </div>
                   {detailMessage ? (
@@ -183,7 +201,7 @@ export const IntakeView = () => {
                   ) : null}
                   {Array.isArray(log.alternatives) && log.alternatives.length > 0 ? (
                     <div className={styles.logAlternatives}>
-                      Alternatives: {log.alternatives.join(' | ')}
+                      Alternativas: {log.alternatives.join(' | ')}
                     </div>
                   ) : null}
                 </div>

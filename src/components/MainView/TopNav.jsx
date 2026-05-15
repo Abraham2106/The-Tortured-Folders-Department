@@ -8,10 +8,10 @@ export const TopNav = () => {
 
   return (
     <header className={styles.topNav}>
-      <div className={styles.navBrand}>The Tortured Folders Department</div>
+      <div className={styles.navBrand}>El Departamento de las Carpetas Torturadas</div>
       <div className={styles.navProfile}>
         <span className={styles.profileName}>{activeProfile?.name}</span>
-        <button className={styles.iconButton} onClick={logout} title="Change Profile">
+        <button className={styles.iconButton} onClick={logout} title="Cambiar perfil">
           <LogOut size={16} />
         </button>
       </div>

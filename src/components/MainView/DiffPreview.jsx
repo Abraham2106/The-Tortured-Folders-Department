@@ -52,13 +52,13 @@ export const DiffPreview = ({
     setDraftState((prev) => ({
       ...prev,
       diffs: prev.diffs.map((diff) => (
-      diff.id === diffId
-        ? {
-            ...diff,
-            target: nextTarget,
-            targetDir: nextTarget
-          }
-        : diff
+        diff.id === diffId
+          ? {
+              ...diff,
+              target: nextTarget,
+              targetDir: nextTarget
+            }
+          : diff
       ))
     }));
   };
@@ -161,12 +161,12 @@ export const DiffPreview = ({
 
   return (
     <div className={styles.container}>
-      <h3 className={styles.title}>Human-in-the-Loop Desk</h3>
+      <h3 className={styles.title}>Mesa de supervisión humana</h3>
 
       <div className={styles.pendingTray}>
         <div className={styles.pendingHeader}>
           <Sparkles size={16} />
-          <span>Bandeja de Pendientes</span>
+          <span>Bandeja de pendientes</span>
         </div>
         {pendingProposals.length === 0 ? (
           <div className={styles.pendingEmpty}>No hay propuestas esperando firma.</div>
@@ -199,7 +199,7 @@ export const DiffPreview = ({
               <span className={`${styles.statusBadge} ${styles[currentProposal.status] || ''}`}>
                 {currentProposal.status}
               </span>
-              <span className={styles.confidence}>AI: {Math.round((currentProposal.aiConfidence || 0) * 100)}%</span>
+              <span className={styles.confidence}>IA: {Math.round((currentProposal.aiConfidence || 0) * 100)}%</span>
             </div>
           </div>
 
@@ -245,9 +245,9 @@ export const DiffPreview = ({
           {currentProposal.executionResult ? (
             <div className={styles.summaryBox}>
               <p>Total: {currentProposal.executionResult.summary.total}</p>
-              <p className={styles.successText}>Success: {currentProposal.executionResult.summary.success}</p>
-              <p className={styles.failedText}>Failed: {currentProposal.executionResult.summary.failed}</p>
-              <p className={styles.skippedText}>Skipped: {currentProposal.executionResult.summary.skipped}</p>
+              <p className={styles.successText}>Exitosas: {currentProposal.executionResult.summary.success}</p>
+              <p className={styles.failedText}>Fallidas: {currentProposal.executionResult.summary.failed}</p>
+              <p className={styles.skippedText}>Omitidas: {currentProposal.executionResult.summary.skipped}</p>
             </div>
           ) : null}
 
@@ -326,7 +326,7 @@ export const DiffPreview = ({
                   disabled={isSubmitting}
                 >
                   <Stamp size={14} />
-                  <span>{isSubmitting ? 'Ejecutando...' : 'Sellar y Ejecutar'}</span>
+                  <span>{isSubmitting ? 'Ejecutando...' : 'Sellar y ejecutar'}</span>
                 </button>
               </>
             ) : (
