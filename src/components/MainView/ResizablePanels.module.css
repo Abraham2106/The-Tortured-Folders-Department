@@ -1,0 +1,38 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+  gap: 0;
+}
+
+.panel {
+  height: 100%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.divider {
+  width: 12px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: col-resize;
+  position: relative;
+  z-index: 1;
+}
+
+.divider:hover .handle,
+.divider:active .handle {
+  background-color: var(--accent);
+  opacity: 0.5;
+}
+
+.handle {
+  width: 3px;
+  height: 48px;
+  border-radius: 99px;
+  background-color: var(--border);
+  transition: background-color 150ms ease, opacity 150ms ease;
+}

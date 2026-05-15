@@ -1,0 +1,38 @@
+:root {
+  /* Backgrounds (Parchment, Bone, Ash) */
+  --bg: #F5F5F4; /* Light Bone */
+  --bg-secondary: #EDECE9; /* Aged Paper */
+  --surface: #E5E4E0; /* Ash */
+  --border: #D1CDC2; /* Faint Ink / Paper edge */
+
+  /* Typography Colors (Ink & Charcoal) */
+  --text-primary: #1C1C1C; /* Ink */
+  --text-secondary: #4A4947; /* Charcoal */
+  --text-muted: #8C8A85; /* Faded Graphite */
+
+  /* Accents (Sepia & Carbon) */
+  --accent: #262626; /* Carbon */
+  --accent-hover: #000000; /* Deep Ink */
+  --accent-soft: #7A746E; /* Sepia wash */
+
+  /* Semantics (Muted Tones) */
+  --success: #5D6359; /* Sage/Dusty Green */
+  --warning: #857A68; /* Tarnished Gold */
+  --error: #8C6262; /* Dried Blood/Deep Rust */
+
+  /* Typography Families */
+  --font-heading: 'EB Garamond', serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'Courier Prime', monospace;
+
+  /* Layout & Shadows (Minimal & Flat) */
+  --radius-lg: 4px; /* More clinical/sharp */
+  --radius-md: 2px;
+  --radius-sm: 0px;
+  
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(28, 28, 28, 0.08);
+
+  /* Transitions (Slower, more deliberate) */
+  --transition: 250ms ease-in-out;
+}
