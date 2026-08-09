@@ -1,5 +1,6 @@
 import process from 'node:process';
 import 'dotenv/config';
+import Anthropic from '@anthropic-ai/sdk';
 
 const SUPPORTED_TYPES = new Set(['move', 'move-dir', 'mkdir', 'rmdir']);
 
@@ -125,12 +126,12 @@ const mergeMessageWithSummary = (message, operations) => {
 };
 
 export const processInstruction = async (message, history = [], directoryTree = '', config = {}) => {
-  const proxyUrl = config.proxyUrl || process.env.GEMINI_PROXY_URL;
-  const model = config.model || process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+  const apiKey = config.apiKey || process.env.ANTHROPIC_API_KEY;
+  const model = config.model || process.env.ANTHROPIC_MODEL || 'claude-opus-5';
   const knownDirectories = Array.isArray(config.knownDirectories) ? config.knownDirectories : [];
 
-  if (!proxyUrl) {
-    throw new Error('Configuracion de IA faltante. Ve a Settings para configurar la URL del Proxy.');
+  if (!apiKey) {
+    throw new Error('Configuracion de IA faltante. Ve a Settings para configurar tu API Key de Anthropic.');
   }
 
   const systemPrompt = `Eres un Asistente de Organizacion de Archivos experto.
@@ -235,32 +236,23 @@ Responde unicamente con JSON valido.
   }
 }`;
 
-  const messages = [
-    { role: 'system', content: systemPrompt },
-    ...history
-  ];
+  const messages = history.length > 0
+    ? history
+    : [{ role: 'user', content: message || 'Hola' }];
 
   try {
-    const response = await fetch(proxyUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model,
-        messages,
-        temperature: 0,
-        response_format: { type: 'json_object' }
-      })
+    const client = new Anthropic({ apiKey });
+    const response = await client.messages.create({
+      model,
+      max_tokens: 4096,
+      system: systemPrompt,
+      messages
     });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(`Error del Proxy (${response.status}): ${errorData.detail || response.statusText}`);
-    }
-
-    const data = await response.json();
-    let rawContent = data.choices[0].message.content;
+    let rawContent = response.content
+      .filter((block) => block.type === 'text')
+      .map((block) => block.text)
+      .join('\n');
 
     try {
       const jsonMatch = rawContent.match(/\{[\s\S]*\}/);

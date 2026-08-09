@@ -98,8 +98,8 @@ export const setupDatabase = () => {
   `);
 
   // Configuración inicial por defecto
-  db.prepare('INSERT OR IGNORE INTO app_settings (key, value) VALUES (?, ?)').run('proxy_url', '');
-  db.prepare('INSERT OR IGNORE INTO app_settings (key, value) VALUES (?, ?)').run('ai_model', 'gemini-2.0-flash');
+  db.prepare('INSERT OR IGNORE INTO app_settings (key, value) VALUES (?, ?)').run('anthropic_api_key', '');
+  db.prepare('INSERT OR IGNORE INTO app_settings (key, value) VALUES (?, ?)').run('ai_model', 'claude-opus-5');
 
   return db;
 };

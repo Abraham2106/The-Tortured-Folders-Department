@@ -4,13 +4,14 @@ import path from 'path';
 import fs from 'fs';
 import process from 'node:process';
 import { createRequire } from 'module';
+import Anthropic from '@anthropic-ai/sdk';
 import { createClassificationPrompt } from './classifier-prompt.js';
 
 const require = createRequire(import.meta.url);
 const mammoth = require('mammoth');
 const PDFParser = require('pdf2json');
 
-const { profileId, watchFolders, proxyUrl, model } = workerData;
+const { profileId, watchFolders, apiKey, model } = workerData;
 let watcher = null;
 
 const normalizeRelativePath = (value) => {
@@ -77,7 +78,7 @@ const chooseBestRelativePath = (decision) => (
 );
 
 const classifyFile = async (extractedText, structureMap, fileName, recentClassifications = []) => {
-  if (!proxyUrl) throw new Error('Proxy URL no configurada');
+  if (!apiKey) throw new Error('API Key de Anthropic no configurada');
 
   const prompt = createClassificationPrompt(
     structureMap,
@@ -86,24 +87,17 @@ const classifyFile = async (extractedText, structureMap, fileName, recentClassif
     recentClassifications
   );
 
-  const response = await fetch(proxyUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model,
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0,
-      response_format: { type: 'json_object' }
-    })
+  const client = new Anthropic({ apiKey });
+  const response = await client.messages.create({
+    model,
+    max_tokens: 2048,
+    messages: [{ role: 'user', content: prompt }]
   });
 
-  if (!response.ok) {
-    const errorBody = await response.text().catch(() => '');
-    throw new Error(`API Error ${response.status}: ${errorBody}`);
-  }
-
-  const data = await response.json();
-  const rawContent = data.choices[0].message.content;
+  const rawContent = response.content
+    .filter((block) => block.type === 'text')
+    .map((block) => block.text)
+    .join('\n');
 
   try {
     const jsonMatch = rawContent.match(/\{[\s\S]*\}/);
