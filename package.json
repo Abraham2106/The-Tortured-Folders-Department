@@ -1,7 +1,7 @@
 {
   "name": "archvisita",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Un archivero inteligente para organizar archivos académicos automáticamente.",
   "author": "Abraham2106",
   "main": "electron/main.js",
@@ -25,10 +25,12 @@
     "files": [
       "dist/**/*",
       "electron/**/*",
+      "public/**/*",
       "package.json"
     ],
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "public/favicon.ico"
     },
     "nsis": {
       "oneClick": false,
@@ -38,6 +40,7 @@
     }
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.116.0",
     "better-sqlite3": "11.5.0",
     "chokidar": "^5.0.0",
     "dotenv": "^17.4.2",

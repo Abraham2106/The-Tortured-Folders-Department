@@ -3,7 +3,7 @@ import styles from './SettingsView.module.css';
 import { Save, AlertCircle, Terminal, Shield } from 'lucide-react';
 
 export const SettingsView = () => {
-  const [settings, setSettings] = useState({ proxy_url: '', ai_model: '' });
+  const [settings, setSettings] = useState({ anthropic_api_key: '', ai_model: '' });
   const [logs, setLogs] = useState([]);
   const [saving, setSaving] = useState(false);
 
@@ -37,7 +37,8 @@ export const SettingsView = () => {
   const saveSettings = async () => {
     try {
       setSaving(true);
-      await window.api.settings.update('proxy_url', settings.proxy_url || '');
+      await window.api.settings.update('anthropic_api_key', settings.anthropic_api_key || '');
+      await window.api.settings.update('ai_model', settings.ai_model || 'claude-opus-5');
       alert('Configuración guardada con éxito.');
     } catch (err) {
       console.error('Error saving settings:', err);
@@ -71,14 +72,25 @@ export const SettingsView = () => {
           </p>
 
           <div className={styles.field}>
-            <label>URL del proxy de Gemini</label>
+            <label>API Key de Anthropic (Claude)</label>
+            <input
+              type="password"
+              value={settings.anthropic_api_key || ''}
+              onChange={(e) => handleUpdate('anthropic_api_key', e.target.value)}
+              placeholder="sk-ant-..."
+            />
+            <small>Tu clave de la API de Anthropic. Se guarda localmente.</small>
+          </div>
+
+          <div className={styles.field}>
+            <label>Modelo de Claude</label>
             <input
               type="text"
-              value={settings.proxy_url || ''}
-              onChange={(e) => handleUpdate('proxy_url', e.target.value)}
-              placeholder="https://tu-proxy.railway.app/v1/chat/completions"
+              value={settings.ai_model || ''}
+              onChange={(e) => handleUpdate('ai_model', e.target.value)}
+              placeholder="claude-opus-5"
             />
-            <small>La URL de tu servidor en Railway o Vercel.</small>
+            <small>Identificador del modelo, por ejemplo claude-opus-5.</small>
           </div>
         </section>
 

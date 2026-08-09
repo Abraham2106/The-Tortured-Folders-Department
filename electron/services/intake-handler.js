@@ -175,8 +175,8 @@ export const startIntakeWorker = (profileId, watchFolders, mainWindow = null) =>
     workerData: {
       profileId,
       watchFolders,
-      proxyUrl: settings.proxy_url || process.env.GEMINI_PROXY_URL,
-      model: settings.ai_model || process.env.GEMINI_MODEL || 'gemini-2.0-flash'
+      apiKey: settings.anthropic_api_key || process.env.ANTHROPIC_API_KEY,
+      model: settings.ai_model || process.env.ANTHROPIC_MODEL || 'claude-opus-5'
     }
   });
 

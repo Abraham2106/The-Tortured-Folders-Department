@@ -59,7 +59,7 @@ export const handleChatSend = async ({ profileId, message, history, targetDir })
   }
 
   const { message: assistantMessage, plan } = await processInstruction(message, history, directoryTree, {
-    proxyUrl: settings.proxy_url,
+    apiKey: settings.anthropic_api_key,
     model: settings.ai_model,
     knownDirectories
   });

@@ -77,6 +77,7 @@ export const createWindow = () => {
     width: 1024,
     height: 768,
     title: 'The Tortured Folders Department',
+    icon: path.join(__dirname, '../../public/favicon.ico'),
     webPreferences: {
       preload: path.join(__dirname, '../preload.cjs'),
       nodeIntegration: false,

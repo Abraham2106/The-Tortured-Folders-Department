@@ -8,7 +8,7 @@ Organize local folders with conversational AI, review every proposed change, and
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![SQLite](https://img.shields.io/badge/SQLite-Local_DB-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://www.sqlite.org/)
-[![Gemini Proxy](https://img.shields.io/badge/LLM-Gemini_Proxy-1A73E8?style=for-the-badge)](#environment-variables)
+[![Claude API](https://img.shields.io/badge/LLM-Claude_API-D97757?style=for-the-badge)](#environment-variables)
 
 </div>
 
@@ -128,7 +128,7 @@ The project is designed around a simple promise:
 | Database | SQLite via `better-sqlite3` |
 | File watching | `chokidar` + `worker_threads` |
 | Document extraction | `pdf2json`, `mammoth` |
-| LLM integration | Configurable proxy via `GEMINI_PROXY_URL` |
+| LLM integration | Claude API via `@anthropic-ai/sdk` (`ANTHROPIC_API_KEY`) |
 | Testing | Vitest |
 
 ---
@@ -166,7 +166,7 @@ The project is designed around a simple promise:
 
 - Node.js `^20.19.0 || >=22.12.0`
 - npm
-- A running LLM proxy endpoint for chat planning and intake classification
+- An Anthropic API key for chat planning and intake classification
 
 ---
 
@@ -183,17 +183,15 @@ npm install
 Create a `.env` file in the project root:
 
 ```env
-GEMINI_PROXY_URL=https://your-proxy.example/v1/chat/completions
-GEMINI_MODEL=gemini-2.0-flash
+ANTHROPIC_API_KEY=sk-ant-your-key
+ANTHROPIC_MODEL=claude-opus-5
 ```
 
-### Proxy Contract
+You can also set the API key and model from the in-app Settings screen; values entered there are stored locally and take precedence over the `.env` file.
 
-The current backend expects an endpoint that:
+### LLM Integration
 
-- Accepts `model`, `messages`, and `response_format` in the request body
-- Returns an OpenAI-style response with `choices[0].message.content`
-- Can be used both by the chat planner and the intake worker
+Both the chat planner (`electron/logic/instruction-engine.js`) and the intake worker (`electron/workers/intake-worker.js`) call the Claude API directly via `@anthropic-ai/sdk`'s `messages.create`, using the configured `ANTHROPIC_API_KEY` and model.
 
 ---
 
